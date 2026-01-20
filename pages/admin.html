@@ -56,6 +56,20 @@
         </div>
       </section>
 
+      <section class="admin-card admin-card--spaced">
+        <div class="admin-card__head">
+          <h2 class="admin-card__title">🧾 Orders</h2>
+          <p class="admin-card__desc">
+            Xem thời gian, tên, số lượng và các món hàng đã đặt.
+          </p>
+        </div>
+        <div class="admin-card__body">
+          <a class="admin-btn admin-btn--primary" href="./admin-users.html">
+            Xem danh sách order
+          </a>
+        </div>
+      </section>
+
       <div class="admin-grid">
         <!-- Form card -->
         <section class="admin-card">
@@ -78,6 +92,17 @@
             <div class="admin-field">
               <label class="admin-label" for="price">Giá</label>
               <input id="price" class="admin-input" placeholder="Ví dụ: 199000" />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="stock">Số lượng</label>
+              <input
+                id="stock"
+                class="admin-input"
+                type="number"
+                min="0"
+                placeholder="Ví dụ: 10"
+              />
             </div>
 
             <div class="admin-field">
@@ -136,6 +161,7 @@
                   <th>Ảnh</th>
                   <th>Category</th>
                   <th>Mô tả</th>
+                  <th>Số lượng</th>
                   <th>Xoá</th>
                 </tr>
               </thead>

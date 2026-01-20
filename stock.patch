@@ -1,0 +1,399 @@
+diff --git a/pages/admin.html b/pages/admin.html
+index 2dbe7e5..80ad774 100644
+--- a/pages/admin.html
++++ b/pages/admin.html
+@@ -78,6 +78,17 @@
+               <label class="admin-label" for="price">Giá</label>
+               <input id="price" class="admin-input" placeholder="Ví dụ: 199000" />
+             </div>
++
++            <div class="admin-field">
++              <label class="admin-label" for="stock">Số lượng</label>
++              <input
++                id="stock"
++                class="admin-input"
++                type="number"
++                min="0"
++                placeholder="Ví dụ: 10"
++              />
++            </div>
+ 
+             <div class="admin-field">
+               <label class="admin-label" for="category">Category</label>
+@@ -147,6 +158,7 @@
+                   <th>Ảnh</th>
+                   <th>Category</th>
+                   <th>Mô tả</th>
++                  <th>Số lượng</th>
+                   <th>Xoá</th>
+                 </tr>
+               </thead>
+diff --git a/js/pages/admin.js b/js/pages/admin.js
+index 9f2b1f6..9a8f6b9 100644
+--- a/js/pages/admin.js
++++ b/js/pages/admin.js
+@@ -23,6 +23,7 @@ const user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+ const idInput = document.getElementById("id");
+ const nameInput = document.getElementById("name");
+ const priceInput = document.getElementById("price");
++const stockInput = document.getElementById("stock");
+ const categoryInput = document.getElementById("category");
+ const descInput = document.getElementById("desc");
+ const imgInput = document.getElementById("imgFile");
+@@ -47,6 +48,7 @@ function resetForm() {
+   idInput.value = "";
+   nameInput.value = "";
+   priceInput.value = "";
++  stockInput.value = "";
+   categoryInput.value = "";
+   descInput.value = "";
+   imageBase64 = "";
+@@ -80,6 +82,7 @@ function renderTable() {
+         </td>
+         <td>${p.category}</td>
+         <td>${p.desc}</td>
++        <td>${Number.isFinite(Number(p.stock)) ? p.stock : "—"}</td>
+         <td>
+           <button type="button" onclick="event.stopPropagation(); removeProduct('${p.id}')">❌</button>
+         </td>
+@@ -95,6 +98,7 @@ function addOrUpdate() {
+   const id = idInput.value.trim();
+   const name = nameInput.value.trim();
+   const price = priceInput.value.trim();
++  const stockRaw = stockInput.value.trim();
+   const category = categoryInput.value;
+   const desc = descInput.value.trim();
+ 
+@@ -102,6 +106,8 @@ function addOrUpdate() {
+ 
+   const imgBase64 = preview?.dataset?.base64 || imageBase64 || "";
+ 
++  const stock = Number(stockRaw);
++
+   if (!id || !name || !price || !category || !desc || !imgBase64) {
+     alert("Vui lòng nhập đầy đủ thông tin và chọn ảnh!");
+     return;
+   }
++
++  if (!Number.isFinite(stock) || stock < 0) {
++    alert("Vui lòng nhập số lượng hợp lệ (>= 0).");
++    return;
++  }
+ 
+   const product = {
+     id,
+     name,
+     price: Number(price),
+     img: imgBase64,
+     category,
+     desc,
++    stock: Math.floor(stock),
+   };
+@@ -147,6 +159,7 @@ function editProduct(index) {
+   idInput.value = p.id;
+   nameInput.value = p.name;
+   priceInput.value = p.price;
++  stockInput.value = Number.isFinite(Number(p.stock)) ? p.stock : "";
+   categoryInput.value = p.category;
+   descInput.value = p.desc;
+diff --git a/js/script.js b/js/script.js
+index 49a5b38..2d981d2 100644
+--- a/js/script.js
++++ b/js/script.js
+@@ -273,6 +273,11 @@ function bindHeaderWishlist() {
+ }
+ 
+ // ================= ADD TO CART =================
++function getProductStockValue(product) {
++  const raw = Number(product?.stock);
++  return Number.isFinite(raw) ? raw : null;
++}
++
+ function addToCart(productId) {
+   const user = getUser();
+ 
+@@ -302,6 +307,11 @@ function addToCart(productId) {
+   let cart = getCart();
+   const index = cart.findIndex((i) => i.id == productId);
++  const stockValue = getProductStockValue(product);
++  const currentQty = index !== -1 ? Number(cart[index].qty) || 0 : 0;
++
++  if (stockValue !== null && stockValue <= currentQty) {
++    alert("Sản phẩm đã hết hàng (sold out).");
++    return;
++  }
+ 
+   if (index !== -1) {
+     cart[index].qty += 1;
+@@ -384,6 +394,10 @@ function renderProductCards(container, list) {
+   }
+ 
+   list.forEach((p) => {
++    const stockValue = getProductStockValue(p);
++    const isSoldOut = stockValue !== null && stockValue <= 0;
++    const addButtonLabel = isSoldOut ? "Sold Out" : "Add To Cart";
++
+     container.innerHTML += `
+-      <div class="product" onclick="goToDetail('${p.id}')">
++      <div class="product${isSoldOut ? " product--sold-out" : ""}" onclick="goToDetail('${p.id}')">
+         <span class="product-discount">-40%</span>
++        ${isSoldOut ? '<span class="product-soldout">Sold out</span>' : ""}
+ 
+         <div class="product-actions">
+           <button class="product-action-btn" type="button" aria-label="Wishlist" data-wishlist-id="${p.id}">${
+@@ -405,9 +419,11 @@ function renderProductCards(container, list) {
+         <div class="product-img-wrap">
+           <img src="${p.img}" class="product-img" />
+ 
+-          <button class="product-cart" onclick="event.stopPropagation(); addToCart('${
+-            p.id
+-          }')">
+-            Add To Cart
++          <button class="product-cart" ${
++            isSoldOut ? "disabled" : ""
++          } onclick="event.stopPropagation(); addToCart('${p.id}')">
++            ${addButtonLabel}
+           </button>
+         </div>
+diff --git a/js/pages/product-detail.js b/js/pages/product-detail.js
+index 98d6f3a..a6d32f1 100644
+--- a/js/pages/product-detail.js
++++ b/js/pages/product-detail.js
+@@ -159,6 +159,12 @@ function renderProductDetail(p) {
+ 
+   const buyBtn = document.querySelector(".product-detail .buy-btn");
+   if (buyBtn && p?.id != null) {
++    const stockValue = getProductStockValue(p);
++    if (stockValue !== null && stockValue <= 0) {
++      buyBtn.disabled = true;
++      buyBtn.textContent = "Sold Out";
++    }
++
+     buyBtn.addEventListener("click", () => {
+       addToCart(p.id);
+       window.location.href = "cart.html";
+@@ -182,6 +188,11 @@ function saveCart(cart) {
+   localStorage.setItem("cart", JSON.stringify(cart));
+ }
+ 
++function getProductStockValue(product) {
++  const raw = Number(product?.stock);
++  return Number.isFinite(raw) ? raw : null;
++}
++
+ function addToCart(productIdToAdd) {
+   const user = getUser();
+ 
+@@ -205,8 +216,15 @@ function addToCart(productIdToAdd) {
+     return;
+   }
+ 
++  const stockValue = getProductStockValue(p);
++
+   const cart = getCart();
+   const index = cart.findIndex((i) => i.id == productIdToAdd);
++  const currentQty = index !== -1 ? Number(cart[index].qty) || 0 : 0;
++
++  if (stockValue !== null && stockValue <= currentQty) {
++    alert("Sản phẩm đã hết hàng (sold out).");
++    return;
++  }
+ 
+   if (index !== -1) {
+     cart[index].qty += 1;
+@@ -263,22 +281,30 @@ function renderRelatedProducts(currentProduct, allProducts) {
+   }
+   container.classList.remove("is-empty");
+   container.innerHTML = related
+-    .map(
+-      (p) => `
+-        <div class="product" data-id="${p.id}" tabindex="0" role="button">
+-          <span class="product-discount">-40%</span>
+-
+-          <div class="product-img-wrap">
+-            <img src="${p.img}" class="product-img" alt="${String(
+-        p.name || "Product"
+-      )
+-        .replace(/"/g, "&quot;")
+-        .trim()}" />
+-
+-            <button class="product-cart" data-add-to-cart="${p.id}">
+-              Add To Cart
+-            </button>
+-          </div>
++    .map((p) => {
++      const stockValue = getProductStockValue(p);
++      const isSoldOut = stockValue !== null && stockValue <= 0;
++
++      return `
++        <div class="product${isSoldOut ? " product--sold-out" : ""}" data-id="${p.id}" tabindex="0" role="button">
++          <span class="product-discount">-40%</span>
++          ${isSoldOut ? '<span class="product-soldout">Sold out</span>' : ""}
++
++          <div class="product-img-wrap">
++            <img src="${p.img}" class="product-img" alt="${String(
++        p.name || "Product"
++      )
++        .replace(/"/g, "&quot;")
++        .trim()}" />
++
++            <button class="product-cart" data-add-to-cart="${p.id}" ${
++              isSoldOut ? "disabled" : ""
++            }>
++              ${isSoldOut ? "Sold Out" : "Add To Cart"}
++            </button>
++          </div>
+ 
+           <h3 class="product-name">${p.name}</h3>
+ 
+@@ -295,8 +321,8 @@ function renderRelatedProducts(currentProduct, allProducts) {
+             ⭐⭐⭐⭐⭐
+             <span>(88)</span>
+           </div>
+         </div>
+-      `
+-    )
++      `;
++    })
+     .join("");
+diff --git a/js/pages/cart.js b/js/pages/cart.js
+index 1b28e0d..a9c6b3f 100644
+--- a/js/pages/cart.js
++++ b/js/pages/cart.js
+@@ -8,6 +8,15 @@ function saveCart(cart) {
+   localStorage.setItem("cart", JSON.stringify(cart));
+ }
+ 
++function getProducts() {
++  return JSON.parse(localStorage.getItem("products")) || [];
++}
++
++function getStockForItem(productId) {
++  const product = getProducts().find((p) => p.id == productId);
++  const raw = Number(product?.stock);
++  return Number.isFinite(raw) ? raw : null;
++}
++
+ function renderCart() {
+   const cartList = document.getElementById("cartList");
+   const totalPrice = document.getElementById("totalPrice");
+@@ -61,6 +70,13 @@ function renderCart() {
+ }
+ 
+ function changeQty(index, delta) {
+   const cart = getCart();
++  const item = cart[index];
++  const stockValue = getStockForItem(item?.id);
++
++  if (delta > 0 && stockValue !== null && item.qty + delta > stockValue) {
++    alert("Số lượng vượt quá tồn kho.");
++    return;
++  }
++
+   cart[index].qty += delta;
+ 
+   if (cart[index].qty <= 0) {
+diff --git a/js/pages/checkout.js b/js/pages/checkout.js
+index 7c65d93..9a5d8f6 100644
+--- a/js/pages/checkout.js
++++ b/js/pages/checkout.js
+@@ -5,6 +5,18 @@ function getCart() {
+   return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+ }
+ 
++function getProducts() {
++  return JSON.parse(localStorage.getItem("products")) || [];
++}
++
++function saveProducts(products) {
++  localStorage.setItem("products", JSON.stringify(products));
++}
++
++function getProductStockValue(product) {
++  const raw = Number(product?.stock);
++  return Number.isFinite(raw) ? raw : null;
++}
++
+ function formatMoney(n) {
+   const num = Number(n) || 0;
+   // bạn đang hiển thị $ nên mình giữ $
+@@ -83,6 +95,30 @@ function placeOrder() {
+     alert("Giỏ hàng trống, không thể đặt hàng!");
+     return;
+   }
+ 
++  const products = getProducts();
++  const stockMap = new Map(products.map((p) => [String(p.id), p]));
++
++  for (const item of cart) {
++    const product = stockMap.get(String(item.id));
++    const stockValue = getProductStockValue(product);
++    const qty = Number(item.qty) || 0;
++    if (stockValue !== null && qty > stockValue) {
++      alert(`Sản phẩm "${item.name}" đã hết hàng.`);
++      return;
++    }
++  }
++
++  cart.forEach((item) => {
++    const product = stockMap.get(String(item.id));
++    if (!product) return;
++    const stockValue = getProductStockValue(product);
++    if (stockValue === null) return;
++    const qty = Number(item.qty) || 0;
++    product.stock = Math.max(0, stockValue - qty);
++  });
++
++  saveProducts(products);
++
+   // demo: đặt hàng xong thì clear cart
+   localStorage.removeItem(CART_KEY);
+   alert("Đặt hàng thành công ✅");
+diff --git a/css/style.css b/css/style.css
+index 25ab4d3..d1bca08 100644
+--- a/css/style.css
++++ b/css/style.css
+@@ -440,6 +440,18 @@
+   border-radius: 4px;
+ }
+ 
++.product-soldout {
++  position: absolute;
++  top: 10px;
++  right: 10px;
++  background: #111827;
++  color: #fff;
++  z-index: 5;
++  font-size: 12px;
++  font-weight: 600;
++  padding: 2px 8px;
++  border-radius: 4px;
++}
++
+ .product-img-wrap {
+   width: 100%;
+   aspect-ratio: 1/1;
+@@ -533,6 +545,21 @@
+   opacity: 1;
+   pointer-events: auto;
+ }
+ 
++.product--sold-out {
++  opacity: 0.85;
++}
++
++.product--sold-out .product-cart {
++  opacity: 1;
++  background: #6b7280;
++  cursor: not-allowed;
++  pointer-events: none;
++}
++
++.product--sold-out .product-actions {
++  opacity: 1;
++  pointer-events: none;
++}
++
+ .product-name {
+   margin-top: 10px;
+   font-size: var(--text-md);

@@ -271,6 +271,11 @@ function bindHeaderWishlist() {
 }
 
 // ================= ADD TO CART =================
+function getProductStockValue(product) {
+  const raw = Number(product?.stock);
+  return Number.isFinite(raw) ? raw : null;
+}
+
 function addToCart(productId) {
   const user = getUser();
 
@@ -296,6 +301,13 @@ function addToCart(productId) {
 
   let cart = getCart();
   const index = cart.findIndex((i) => i.id == productId);
+  const stockValue = getProductStockValue(product);
+  const currentQty = index !== -1 ? Number(cart[index].qty) || 0 : 0;
+
+  if (stockValue !== null && stockValue <= currentQty) {
+    alert("Sản phẩm đã hết hàng (sold out).");
+    return;
+  }
 
   if (index !== -1) {
     cart[index].qty += 1;
@@ -372,9 +384,14 @@ function renderProductCards(container, list) {
   }
 
   list.forEach((p) => {
+    const stockValue = getProductStockValue(p);
+    const isSoldOut = stockValue !== null && stockValue <= 0;
+    const addButtonLabel = isSoldOut ? "Sold Out" : "Add To Cart";
+
     container.innerHTML += `
-      <div class="product" onclick="goToDetail('${p.id}')">
+      <div class="product${isSoldOut ? " product--sold-out" : ""}" onclick="goToDetail('${p.id}')">
         <span class="product-discount">-40%</span>
+        ${isSoldOut ? '<span class="product-soldout">Sold out</span>' : ""}
 
         <div class="product-actions">
           <button class="product-action-btn" type="button" aria-label="Wishlist" data-wishlist-id="${p.id}">${
@@ -388,10 +405,10 @@ function renderProductCards(container, list) {
         <div class="product-img-wrap">
           <img src="${p.img}" class="product-img" />
 
-          <button class="product-cart" onclick="event.stopPropagation(); addToCart('${
-            p.id
-          }')">
-            Add To Cart
+          <button class="product-cart" ${
+            isSoldOut ? "disabled" : ""
+          } onclick="event.stopPropagation(); addToCart('${p.id}')">
+            ${addButtonLabel}
           </button>
         </div>
 
@@ -985,11 +1002,30 @@ init();
 function applyNavByRole() {
   const u = getUser();
   const isAdmin = u?.role === "admin";
+  const isInPagesFolder = window.location.pathname.includes("/pages/");
 
   const navShop = document.getElementById("navShop");
   const navProduct = document.getElementById("navProduct");
+  const cartBtn = document.getElementById("headerCartBtn");
 
   if (navShop) navShop.parentElement.style.display = isAdmin ? "none" : "";
   if (navProduct)
     navProduct.parentElement.style.display = isAdmin ? "none" : "";
+
+  if (cartBtn) {
+    if (isAdmin) {
+      cartBtn.setAttribute("aria-disabled", "true");
+      cartBtn.removeAttribute("href");
+      cartBtn.style.pointerEvents = "none";
+      cartBtn.style.opacity = "0.6";
+    } else {
+      cartBtn.removeAttribute("aria-disabled");
+      cartBtn.setAttribute(
+        "href",
+        isInPagesFolder ? "cart.html" : "pages/cart.html",
+      );
+      cartBtn.style.pointerEvents = "";
+      cartBtn.style.opacity = "";
+    }
+  }
 }

@@ -158,6 +158,12 @@ function renderProductDetail(p) {
 
   const buyBtn = document.querySelector(".product-detail .buy-btn");
   if (buyBtn && p?.id != null) {
+    const stockValue = getProductStockValue(p);
+    if (stockValue !== null && stockValue <= 0) {
+      buyBtn.disabled = true;
+      buyBtn.textContent = "Sold Out";
+    }
+
     buyBtn.addEventListener("click", () => {
       addToCart(p.id);
       window.location.href = "cart.html";
@@ -175,6 +181,11 @@ function getCart() {
 
 function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function getProductStockValue(product) {
+  const raw = Number(product?.stock);
+  return Number.isFinite(raw) ? raw : null;
 }
 
 function addToCart(productIdToAdd) {
@@ -198,8 +209,16 @@ function addToCart(productIdToAdd) {
     return;
   }
 
+  const stockValue = getProductStockValue(p);
+
   const cart = getCart();
   const index = cart.findIndex((i) => i.id == productIdToAdd);
+  const currentQty = index !== -1 ? Number(cart[index].qty) || 0 : 0;
+
+  if (stockValue !== null && stockValue <= currentQty) {
+    alert("Sản phẩm đã hết hàng (sold out).");
+    return;
+  }
 
   if (index !== -1) {
     cart[index].qty += 1;
@@ -243,10 +262,14 @@ function renderRelatedProducts(currentProduct, allProducts) {
   }
   container.classList.remove("is-empty");
   container.innerHTML = related
-    .map(
-      (p) => `
-        <div class="product" data-id="${p.id}" tabindex="0" role="button">
+    .map((p) => {
+      const stockValue = getProductStockValue(p);
+      const isSoldOut = stockValue !== null && stockValue <= 0;
+
+      return `
+        <div class="product${isSoldOut ? " product--sold-out" : ""}" data-id="${p.id}" tabindex="0" role="button">
           <span class="product-discount">-40%</span>
+          ${isSoldOut ? '<span class="product-soldout">Sold out</span>' : ""}
 
           <div class="product-img-wrap">
             <img src="${p.img}" class="product-img" alt="${String(
@@ -255,8 +278,10 @@ function renderRelatedProducts(currentProduct, allProducts) {
         .replace(/"/g, "&quot;")
         .trim()}" />
 
-            <button class="product-cart" data-add-to-cart="${p.id}">
-              Add To Cart
+            <button class="product-cart" data-add-to-cart="${p.id}" ${
+              isSoldOut ? "disabled" : ""
+            }>
+              ${isSoldOut ? "Sold Out" : "Add To Cart"}
             </button>
           </div>
 
@@ -274,8 +299,8 @@ function renderRelatedProducts(currentProduct, allProducts) {
             <span>(88)</span>
           </div>
         </div>
-      `
-    )
+      `;
+    })
     .join("");
 
   container.addEventListener("click", (e) => {

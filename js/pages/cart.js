@@ -9,6 +9,16 @@ function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
+function getProducts() {
+  return JSON.parse(localStorage.getItem("products")) || [];
+}
+
+function getStockForItem(productId) {
+  const product = getProducts().find((p) => p.id == productId);
+  const raw = Number(product?.stock);
+  return Number.isFinite(raw) ? raw : null;
+}
+
 function renderCart() {
   const cartList = document.getElementById("cartList");
   const totalPrice = document.getElementById("totalPrice");
@@ -51,6 +61,14 @@ function renderCart() {
 
 function changeQty(index, delta) {
   const cart = getCart();
+  const item = cart[index];
+  const stockValue = getStockForItem(item?.id);
+
+  if (delta > 0 && stockValue !== null && item.qty + delta > stockValue) {
+    alert("Số lượng vượt quá tồn kho.");
+    return;
+  }
+
   cart[index].qty += delta;
 
   if (cart[index].qty <= 0) {

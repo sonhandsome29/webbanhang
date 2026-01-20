@@ -32,7 +32,6 @@
           <section class="checkout-billing">
             <h1 class="checkout-title">Billing Details</h1>
 
-            <!-- ✅ thêm id để validate -->
             <form class="checkout-form" id="checkoutForm" action="#" method="post">
               <div class="checkout-field">
                 <label for="firstName">
@@ -59,10 +58,10 @@
               </div>
 
               <div class="checkout-field">
-                <label for="city">
+                <label for="townCity">
                   Town/City<span class="is-required">*</span>
                 </label>
-                <input id="city" name="city" type="text" required />
+                <input id="townCity" name="townCity" type="text" required />
               </div>
 
               <div class="checkout-field">
@@ -79,44 +78,42 @@
                 <input id="email" name="email" type="email" required />
               </div>
 
-              <label class="checkout-save">
-                <input type="checkbox" name="saveInfo" />
-                Save this information for faster check-out next time
+              <label class="checkout-checkbox">
+                <input type="checkbox" />
+                <span>Save this information for faster check-out next time</span>
               </label>
             </form>
           </section>
 
-          <!-- ORDER SUMMARY -->
-          <aside class="checkout-summary" aria-label="Order summary">
-            <div class="summary-items" id="checkoutItems"></div>
-
+          <aside class="checkout-summary">
+            <div class="summary-products" id="checkoutItems"></div>
             <div class="summary-empty" id="checkoutEmpty" hidden>
-              <p class="summary-empty__text">Giỏ hàng đang trống.</p>
+              <p>Chưa có sản phẩm trong giỏ.</p>
               <a class="btn summary-empty__btn" href="./cart.html">Quay lại giỏ hàng</a>
             </div>
 
-            <div class="summary-totals">
-              <div class="summary-row">
-                <span class="summary-row__label">Subtotal:</span>
-                <span class="summary-row__value" id="checkoutSubtotal">$0</span>
-              </div>
-              <div class="summary-divider"></div>
-              <div class="summary-row">
-                <span class="summary-row__label">Shipping:</span>
-                <span class="summary-row__value" id="checkoutShipping">Free</span>
-              </div>
-              <div class="summary-divider"></div>
-              <div class="summary-row summary-row--strong">
-                <span class="summary-row__label">Total:</span>
-                <span class="summary-row__value" id="checkoutTotal">$0</span>
-              </div>
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="checkoutSubtotal">$0</span>
+            </div>
+            <div class="summary-row">
+              <span>Shipping:</span>
+              <span>Free</span>
+            </div>
+            <div class="summary-row summary-row--total">
+              <span>Total:</span>
+              <span id="checkoutTotal">$0</span>
             </div>
 
-            <div class="summary-payment">
+            <div class="summary-payments">
               <label class="payment-option">
                 <input type="radio" name="payment" value="bank" />
                 <span class="payment-option__label">Bank</span>
-                <span class="payment-cards" aria-hidden="true">VISA Mastercard</span>
+              </label>
+
+              <label class="payment-option">
+                <input type="radio" name="payment" value="paypal" />
+                <span class="payment-option__label">Paypal</span>
               </label>
 
               <label class="payment-option">
@@ -146,6 +143,7 @@
   const CART_KEY = "cart";
   const ORDERS_KEY = "orders";
   const LAST_ORDER_KEY = "lastOrder";
+  const PRODUCTS_KEY = "products";
 
   // ===== HELPERS =====
   function safeJson(key, fallback) {
@@ -167,6 +165,19 @@
 
   function getOrders() {
     return safeJson(ORDERS_KEY, []);
+  }
+
+  function getProducts() {
+    return safeJson(PRODUCTS_KEY, []);
+  }
+
+  function saveProducts(products) {
+    setJson(PRODUCTS_KEY, products);
+  }
+
+  function getProductStockValue(product) {
+    const raw = Number(product?.stock);
+    return Number.isFinite(raw) ? raw : null;
   }
 
   function getCurrentUser() {
@@ -261,6 +272,19 @@
 
     const total = calcTotal(cart);
 
+    const products = getProducts();
+    const stockMap = new Map(products.map((p) => [String(p.id), p]));
+
+    for (const item of cart) {
+      const product = stockMap.get(String(item.id));
+      const stockValue = getProductStockValue(product);
+      const qty = Number(item.qty) || 0;
+      if (stockValue !== null && qty > stockValue) {
+        alert(`Sản phẩm "${item.name}" đã hết hàng.`);
+        return;
+      }
+    }
+
     const order = {
       id: Date.now(),
 
@@ -276,6 +300,17 @@
       dateVN: new Date().toLocaleString("vi-VN"),
       status: "paid",
     };
+
+    cart.forEach((item) => {
+      const product = stockMap.get(String(item.id));
+      if (!product) return;
+      const stockValue = getProductStockValue(product);
+      if (stockValue === null) return;
+      const qty = Number(item.qty) || 0;
+      product.stock = Math.max(0, stockValue - qty);
+    });
+
+    saveProducts(products);
 
     // ✅ append vào ORDERS
     const orders = getOrders();
