@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile</title>
+
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <style>
+    .profile-page{ background:#f6f7fb; min-height:100vh; padding:40px 0; }
+    .profile-card{
+      max-width: 980px; margin:0 auto; background:#fff; border-radius:18px;
+      padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.08);
+    }
+    .profile-head{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .profile-left{ display:flex; align-items:center; gap:14px; }
+    .profile-avatar{
+      width:74px; height:74px; border-radius:999px; object-fit:cover;
+      border:2px solid rgba(0,0,0,.08); background:#f2f3f7;
+    }
+    .profile-name{ font-weight:800; margin:0; }
+    .profile-sub{ margin:2px 0 0; color:rgba(0,0,0,.55); font-size:13px; }
+    .profile-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .pbtn{ border:0; cursor:pointer; padding:10px 14px; border-radius:12px; font-weight:700; }
+    .pbtn-primary{ background:#111; color:#fff; }
+    .pbtn-ghost{ background:#f2f3f7; color:#111; }
+    .profile-grid{
+      margin-top:18px; display:grid; grid-template-columns:1fr 1fr; gap:14px;
+    }
+    .field label{ display:block; font-size:12px; font-weight:700; color:rgba(0,0,0,.6); margin-bottom:6px; }
+    .field input{
+      width:100%; height:46px; border-radius:12px; border:1px solid rgba(0,0,0,.12);
+      padding:0 12px; outline:none; background:#fafbff;
+    }
+    .field input:focus{ box-shadow:0 0 0 4px rgba(0,0,0,.08); border-color:rgba(0,0,0,.35); }
+    .full{ grid-column:1/-1; }
+    .note{ margin-top:14px; color:rgba(0,0,0,.55); font-size:13px; }
+    @media(max-width:860px){ .profile-grid{ grid-template-columns:1fr; } }
+  </style>
+</head>
+
+<body>
+  <main class="profile-page">
+    <div class="o-container">
+      <div class="profile-card">
+        <div class="profile-head">
+          <div class="profile-left">
+            <img id="avatarPreview" class="profile-avatar" alt="avatar" />
+            <div>
+              <h2 id="displayName" class="profile-name">User</h2>
+              <p id="displayEmail" class="profile-sub">email</p>
+            </div>
+          </div>
+
+          <div class="profile-actions">
+            <label class="pbtn pbtn-primary" style="display:inline-flex;align-items:center;gap:8px;">
+              <a class="btn btn-ghost" href="../index.html">🏠 Về trang chủ</a>
+              Upload New Photo
+              <input id="avatarFile" type="file" accept="image/*" style="display:none;">
+            </label>
+            <button class="pbtn pbtn-ghost" id="btnSave">Save</button>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <div class="field">
+            <label>First Name</label>
+            <input id="firstName" placeholder="eg. Son" />
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <input id="lastName" placeholder="eg. Deptrai" />
+          </div>
+
+          <div class="field full">
+            <label>User Name</label>
+            <input id="username" placeholder="eg. sondep***" />
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input id="email" disabled />
+          </div>
+
+          <div class="field">
+            <label>Phone Number</label>
+            <input id="phone" placeholder="eg. 09xxxxxxxx" />
+          </div>
+        </div>
+
+        <p class="note">Thông tin được lưu vào localStorage (demo).</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const USERS_KEY = "users";
+    const CURRENT_USER_KEY = "user";
+
+    function getUsers(){ return JSON.parse(localStorage.getItem(USERS_KEY)) || []; }
+    function saveUsers(users){ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+    function getCurrentUser(){ return JSON.parse(localStorage.getItem(CURRENT_USER_KEY)); }
+    function saveCurrentUser(u){ localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(u)); }
+
+    function ensureProfile(u){
+      if(!u.profile) u.profile = {};
+      u.profile.firstName ??= "";
+      u.profile.lastName ??= "";
+      u.profile.username ??= (u.name || "");
+      u.profile.phone ??= "";
+      u.profile.avatar ??= "https://i.pravatar.cc/120?img=32";
+      return u;
+    }
+
+    const u = getCurrentUser();
+    if(!u){ alert("Bạn cần đăng nhập!"); window.location.href = "login.html"; }
+
+    let current = ensureProfile(u);
+
+    const avatarPreview = document.getElementById("avatarPreview");
+    const displayName = document.getElementById("displayName");
+    const displayEmail = document.getElementById("displayEmail");
+
+    function render(){
+      avatarPreview.src = current.profile.avatar;
+      displayName.textContent = (current.profile.firstName || current.name || "User") + " " + (current.profile.lastName || "");
+      displayEmail.textContent = current.email || "";
+
+      document.getElementById("firstName").value = current.profile.firstName || "";
+      document.getElementById("lastName").value = current.profile.lastName || "";
+      document.getElementById("username").value = current.profile.username || "";
+      document.getElementById("phone").value = current.profile.phone || "";
+      document.getElementById("email").value = current.email || "";
+    }
+
+    // upload avatar -> base64
+    document.getElementById("avatarFile").addEventListener("change", function(){
+      const file = this.files?.[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        current.profile.avatar = reader.result;
+        avatarPreview.src = current.profile.avatar;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById("btnSave").addEventListener("click", () => {
+      current.profile.firstName = document.getElementById("firstName").value.trim();
+      current.profile.lastName  = document.getElementById("lastName").value.trim();
+      current.profile.username  = document.getElementById("username").value.trim();
+      current.profile.phone     = document.getElementById("phone").value.trim();
+
+      // cập nhật vào users[]
+      const users = getUsers();
+      const idx = users.findIndex(x => x.id === current.id);
+      if(idx !== -1) users[idx] = current;
+      saveUsers(users);
+
+      // cập nhật current user
+      saveCurrentUser(current);
+
+      render();
+      alert("Cập nhật thông tin thành công ✅");
+    });
+
+    render();
+  </script>
+</body>
+</html>

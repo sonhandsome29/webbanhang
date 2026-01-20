@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+
+    <!-- CSS chung của project -->
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+
+    
+    <link rel="stylesheet" href="../css/pages/admin.css" />
+  </head>
+
+  <body class="admin-page">
+    <main class="o-container admin-wrap">
+      <!-- Topbar -->
+      <section class="admin-topbar">
+        <div>
+          <div class="admin-breadcrumb">Dashboard / <strong>Products</strong></div>
+          <h1 class="admin-title">👑 ADMIN – Quản lý sản phẩm</h1>
+          <p class="admin-subtitle">
+    
+          </p>
+        </div>
+
+        <div class="admin-actions">
+          <!-- ✅ vì admin.html nằm trong /pages nên về home phải ../ -->
+          <a class="admin-btn admin-btn--ghost" href="../index.html">🏠 Về trang chủ</a>
+
+          <!-- ✅ gọi logout() trong admin.js -->
+          <button class="admin-btn admin-btn--danger" type="button" onclick="logout()">
+            🚪 Logout
+          </button>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <section class="admin-stats">
+        <div class="admin-stat">
+          <div class="admin-stat__label">Tổng sản phẩm</div>
+          <div class="admin-stat__value" id="statTotalProducts">0</div>
+        </div>
+
+        <div class="admin-stat">
+          <div class="admin-stat__label">Danh mục</div>
+          <div class="admin-stat__value" id="statCategories">0</div>
+        </div>
+
+        <div class="admin-stat">
+          <div class="admin-stat__label">Cập nhật gần nhất</div>
+          <div class="admin-stat__value" id="statLastUpdate">—</div>
+        </div>
+      </section>
+
+      <div class="admin-grid">
+        <!-- Form card -->
+        <section class="admin-card">
+          <div class="admin-card__head">
+            <h2 class="admin-card__title">➕ Thêm / Sửa sản phẩm</h2>
+            <p class="admin-card__desc">Click 1 dòng trong bảng để edit nhanh.</p>
+          </div>
+
+          <div class="admin-form">
+            <div class="admin-field">
+              <label class="admin-label" for="id">ID sản phẩm</label>
+              <input id="id" class="admin-input" placeholder="Ví dụ: 101" />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="name">Tên sản phẩm</label>
+              <input id="name" class="admin-input" placeholder="Ví dụ: Áo sơ mi nam" />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="price">Giá</label>
+              <input id="price" class="admin-input" placeholder="Ví dụ: 199000" />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="category">Category</label>
+              <select id="category" class="admin-input">
+                <option value="">-- Chọn category --</option>
+                <option value="Fashion Women">Fashion Women</option>
+                <option value="Fashion Men">Fashion Men</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Home">Home</option>
+                <option value="Beauty">Beauty</option>
+              </select>
+            </div>
+
+            <div class="admin-field admin-field--full">
+              <label class="admin-label" for="imgFile">Ảnh sản phẩm</label>
+              <div class="admin-upload">
+                <input type="file" id="imgFile" accept="image/*" />
+                <img id="preview" class="admin-preview" alt="Preview" style="display: none" />
+              </div>
+              <small class="admin-hint">Chọn ảnh để xem preview.</small>
+            </div>
+
+            <div class="admin-field admin-field--full">
+              <label class="admin-label" for="desc">Mô tả</label>
+              <textarea
+                id="desc"
+                class="admin-textarea"
+                placeholder="Mô tả sản phẩm..."
+              ></textarea>
+            </div>
+
+            <div class="admin-field admin-field--full admin-form__actions">
+              <!-- ✅ gọi addOrUpdate() trong admin.js -->
+              <button id="btnSaveProduct" class="admin-btn admin-btn--primary" type="button">
+                💾 Lưu sản phẩm
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Table card -->
+        <section class="admin-card">
+          <div class="admin-card__head">
+            <h2 class="admin-card__title">📦 Danh sách sản phẩm</h2>
+            <p class="admin-card__desc">Click 1 dòng để sửa. Nút ❌ để xoá.</p>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tên</th>
+                  <th>Giá</th>
+                  <th>Ảnh</th>
+                  <th>Category</th>
+                  <th>Mô tả</th>
+                  <th>Xoá</th>
+                </tr>
+              </thead>
+
+              <!-- ✅ admin.js render vào đây -->
+              <tbody id="productTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ✅ admin.js nằm ở /js/pages -->
+    <script src="../js/pages/admin.js"></script>
+
+    <!-- ✅ Stats helper: update stats sau khi renderTable -->
+    <script>
+      function updateAdminStats() {
+        const products = JSON.parse(localStorage.getItem("products")) || [];
+
+        const totalEl = document.getElementById("statTotalProducts");
+        const catEl = document.getElementById("statCategories");
+        const lastEl = document.getElementById("statLastUpdate");
+
+        if (totalEl) totalEl.textContent = products.length;
+
+        const cats = new Set(products.map((p) => p.category).filter(Boolean));
+        if (catEl) catEl.textContent = cats.size;
+
+        const now = new Date();
+        if (lastEl)
+          lastEl.textContent =
+            now.toLocaleDateString("vi-VN") + " " + now.toLocaleTimeString("vi-VN");
+      }
+
+      // chạy 1 lần khi load
+      updateAdminStats();
+
+      // hook renderTable() để sau khi CRUD xong stats cập nhật luôn
+      const _oldRender = window.renderTable;
+      if (typeof _oldRender === "function") {
+        window.renderTable = function () {
+          _oldRender();
+          updateAdminStats();
+        };
+      }
+    </script>
+  </body>
+</html>

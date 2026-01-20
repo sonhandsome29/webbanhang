@@ -1,0 +1,276 @@
+<style>
+  a {
+    font-size: 16px;
+  }
+
+  .site-footer {
+    background: #000;
+    color: rgba(255, 255, 255, 0.85);
+    padding-top: 56px;
+  }
+  .site-footer a {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .site-footer a:hover {
+    color: #fff;
+  }
+
+  .site-footer .o-container {
+    max-width: 1440px;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1.1fr 0.75fr 0.75fr 1.25fr;
+    gap: 80px;
+    padding-bottom: 44px;
+  }
+
+  .footer-col__title {
+    font-family: var(--font-title, Inter, sans-serif);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #fff;
+  }
+  .footer-col__subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #fff;
+    opacity: 0.95;
+  }
+  .footer-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .footer-list {
+    list-style: none;
+    display: grid;
+    gap: 16px;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .footer-subscribe {
+    display: grid;
+    gap: 12px;
+  }
+
+  .footer-subscribe__field {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 6px;
+    overflow: hidden;
+    height: 44px;
+    max-width: 217px;
+  }
+  .footer-subscribe__field input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 0 12px;
+    background: transparent;
+    color: #fff;
+    font-size: 13px;
+  }
+  .footer-subscribe__field input::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .footer-subscribe__field button {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .footer-download {
+    display: grid;
+    gap: 12px;
+  }
+  .footer-download__row {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+  .footer-qr {
+    width: 84px;
+    height: 84px;
+    background: #fff;
+
+    display: grid;
+    place-items: center;
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .store-badges {
+    display: grid;
+    gap: 10px;
+  }
+  .store-badge {
+    height: 38px;
+    border-radius: 6px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+    color: #fff;
+    font-size: 12px;
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 24px;
+    margin-top: 8px;
+  }
+  .footer-social a {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+  .footer-social svg {
+    width: 16px;
+    height: 16px;
+    fill: #fff;
+    opacity: 0.95;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 18px 0;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  @media (max-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+  }
+  @media (max-width: 468px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+    .footer-subscribe__field {
+      max-width: 100%;
+    }
+    .site-footer .o-container{
+      padding-inline: var(--space-lg);
+    }
+
+
+  }
+</style>
+
+<div class="site-footer">
+  <div class="o-container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-col__title">Exclusive</div>
+        <div class="footer-col__subtitle">Subscribe</div>
+        <div class="footer-text">Get 10% off your first order</div>
+
+        <div class="footer-subscribe" style="margin-top: 14px">
+          <div class="footer-subscribe__field">
+            <input type="email" placeholder="Enter your email" />
+            <button type="button" aria-label="Send">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col__title">Support</div>
+        <div class="footer-text">
+          111 Bijoy sarani, Dhaka, DH 1515, Bangladesh.
+        </div>
+        <div class="footer-text" style="margin-top: 10px">
+          exclusive@gmail.com
+        </div>
+        <div class="footer-text" style="margin-top: 10px">
+          +88015-88888-9999
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col__title">Account</div>
+        <ul class="footer-list">
+          <li><a href="#">My Account</a></li>
+          <li><a href="#">Login / Register</a></li>
+          <li><a href="#">Cart</a></li>
+          <li><a href="#">Wishlist</a></li>
+          <li><a href="#">Shop</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col__title">Quick Link</div>
+        <ul class="footer-list">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col__title">Download App</div>
+        <div class="footer-text">Save $3 with App New User Only</div>
+
+        <div class="footer-download">
+          <div class="footer-download__row">
+            <img class="footer-qr" src="../../assets/images/QR-code.jpg" />
+            <div class="store-badges">
+              <div class="store-badge">
+                <img
+                  src="../../assets/icons/gg-play-logo.png"
+                  alt="gg-play-logo"
+                />
+              </div>
+              <div class="store-badge">
+                <img
+                  src="../../assets/icons/app-store-logo.png"
+                  alt="gg-play-logo"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-social" aria-label="Social links">
+            <a href="#" aria-label="Facebook">
+              <img src="../../assets/icons/Icon-Facebook.png" alt="icon" />
+            </a>
+            <a href="#" aria-label="Twitter">
+              <img src="../../assets/icons/Icon-Twitter.png" alt="icon" />
+            </a>
+            <a href="#" aria-label="Instagram">
+              <img src="../../assets/icons/icon-instagram.png" alt="icon" />
+            </a>
+            <a href="#" aria-label="LinkedIn">
+              <img src="../../assets/icons/Icon-Linkedin.png" alt="icon" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">© Copyright Rimel 2022. All right reserved</div>
+  </div>
+</div>

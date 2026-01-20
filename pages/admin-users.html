@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Users</title>
+
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/pages/admin-users.css" />
+</head>
+
+<body class="admin-page">
+  <main class="o-container admin-wrap">
+    <section class="admin-topbar">
+      <div>
+        <div class="admin-breadcrumb">Dashboard / <strong>Users</strong></div>
+        <h1 class="admin-title">👑 ADMIN – Quản lý người dùng</h1>
+        <p class="admin-subtitle">Xem user + thống kê đơn hàng theo user.</p>
+      </div>
+
+      <div class="admin-actions">
+        <a class="admin-btn admin-btn--ghost" href="../index.html">🏠 Về trang chủ</a>
+        <a class="admin-btn admin-btn--ghost" href="./admin.html">📦 Products</a>
+        <button class="admin-btn admin-btn--danger" type="button" onclick="logout()">🚪 Logout</button>
+      </div>
+    </section>
+
+    <section class="admin-users-toolbar">
+      <div class="admin-search">
+        <input id="userSearch" class="admin-input" placeholder="Tìm theo username / email..." />
+      </div>
+
+      <div class="admin-filter">
+        <select id="roleFilter" class="admin-input">
+          <option value="">Tất cả role</option>
+          <option value="admin">admin</option>
+          <option value="user">user</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <div class="admin-card__head">
+        <h2 class="admin-card__title">👥 Danh sách người dùng</h2>
+        <p class="admin-card__desc">Click “Xem đơn” để xem chi tiết order của user.</p>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table admin-users-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Số đơn</th>
+              <th>Tổng tiền</th>
+              <th>Lần mua gần nhất</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+
+        <div class="admin-empty" id="usersEmpty" hidden>
+          Chưa có dữ liệu users / orders trong localStorage.
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal Orders -->
+    <div class="admin-modal" id="ordersModal" hidden>
+      <div class="admin-modal__backdrop" data-close="1"></div>
+      <div class="admin-modal__card">
+        <div class="admin-modal__head">
+          <div>
+            <h3 class="admin-modal__title" id="modalTitle">Đơn hàng</h3>
+            <p class="admin-modal__sub" id="modalSub">—</p>
+          </div>
+          <button class="admin-btn admin-btn--ghost" type="button" data-close="1">✖</button>
+        </div>
+
+        <div class="admin-modal__body">
+          <div id="ordersList"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/pages/admin-users.js"></script>
+</body>
+</html>

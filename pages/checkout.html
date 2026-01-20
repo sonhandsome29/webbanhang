@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter&family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/pages/checkout.css" />
+  </head>
+
+  <body>
+    <main class="checkout-page">
+      <div class="o-container">
+        <div class="checkout-breadcrumb">
+          <a href="../index.html">Account</a> / <a href="#">My Account</a> /
+          <a href="#">Product</a> / <a href="./cart.html">View Cart</a> /
+          <strong>Checkout</strong>
+        </div>
+
+        <div class="checkout-layout">
+          <section class="checkout-billing">
+            <h1 class="checkout-title">Billing Details</h1>
+
+            <!-- ✅ thêm id để validate -->
+            <form class="checkout-form" id="checkoutForm" action="#" method="post">
+              <div class="checkout-field">
+                <label for="firstName">
+                  First Name<span class="is-required">*</span>
+                </label>
+                <input id="firstName" name="firstName" type="text" required />
+              </div>
+
+              <div class="checkout-field">
+                <label for="companyName">Company Name</label>
+                <input id="companyName" name="companyName" type="text" />
+              </div>
+
+              <div class="checkout-field">
+                <label for="streetAddress">
+                  Street Address<span class="is-required">*</span>
+                </label>
+                <input id="streetAddress" name="streetAddress" type="text" required />
+              </div>
+
+              <div class="checkout-field">
+                <label for="apartment">Apartment, floor, etc. (optional)</label>
+                <input id="apartment" name="apartment" type="text" />
+              </div>
+
+              <div class="checkout-field">
+                <label for="city">
+                  Town/City<span class="is-required">*</span>
+                </label>
+                <input id="city" name="city" type="text" required />
+              </div>
+
+              <div class="checkout-field">
+                <label for="phone">
+                  Phone Number<span class="is-required">*</span>
+                </label>
+                <input id="phone" name="phone" type="tel" required />
+              </div>
+
+              <div class="checkout-field">
+                <label for="email">
+                  Email Address<span class="is-required">*</span>
+                </label>
+                <input id="email" name="email" type="email" required />
+              </div>
+
+              <label class="checkout-save">
+                <input type="checkbox" name="saveInfo" />
+                Save this information for faster check-out next time
+              </label>
+            </form>
+          </section>
+
+          <!-- ORDER SUMMARY -->
+          <aside class="checkout-summary" aria-label="Order summary">
+            <div class="summary-items" id="checkoutItems"></div>
+
+            <div class="summary-empty" id="checkoutEmpty" hidden>
+              <p class="summary-empty__text">Giỏ hàng đang trống.</p>
+              <a class="btn summary-empty__btn" href="./cart.html">Quay lại giỏ hàng</a>
+            </div>
+
+            <div class="summary-totals">
+              <div class="summary-row">
+                <span class="summary-row__label">Subtotal:</span>
+                <span class="summary-row__value" id="checkoutSubtotal">$0</span>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-row">
+                <span class="summary-row__label">Shipping:</span>
+                <span class="summary-row__value" id="checkoutShipping">Free</span>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-row summary-row--strong">
+                <span class="summary-row__label">Total:</span>
+                <span class="summary-row__value" id="checkoutTotal">$0</span>
+              </div>
+            </div>
+
+            <div class="summary-payment">
+              <label class="payment-option">
+                <input type="radio" name="payment" value="bank" />
+                <span class="payment-option__label">Bank</span>
+                <span class="payment-cards" aria-hidden="true">VISA Mastercard</span>
+              </label>
+
+              <label class="payment-option">
+                <input type="radio" name="payment" value="cod" checked />
+                <span class="payment-option__label">Cash on delivery</span>
+              </label>
+            </div>
+
+            <div class="summary-coupon">
+              <input class="summary-coupon__input" type="text" placeholder="Coupon Code" />
+              <button type="button" class="btn summary-coupon__btn">Apply Coupon</button>
+            </div>
+
+            <button type="button" class="btn summary-place-order" id="btnPlaceOrder">
+              Place Order
+            </button>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <!-- ✅ SCRIPT ĐỂ CUỐI BODY -->
+    <script>
+  // ===== KEYS (đồng bộ toàn project) =====
+  const USERS_KEY = "users";
+  const CURRENT_USER_KEY = "user";
+  const CART_KEY = "cart";
+  const ORDERS_KEY = "orders";
+  const LAST_ORDER_KEY = "lastOrder";
+
+  // ===== HELPERS =====
+  function safeJson(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function setJson(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function getCart() {
+    return safeJson(CART_KEY, []);
+  }
+
+  function getOrders() {
+    return safeJson(ORDERS_KEY, []);
+  }
+
+  function getCurrentUser() {
+    return safeJson(CURRENT_USER_KEY, null);
+  }
+
+  function formatMoney(n) {
+    return "$" + Math.round(Number(n) || 0);
+  }
+
+  function calcTotal(cart) {
+    return cart.reduce(
+      (sum, item) => sum + (Number(item.price) || 0) * (Number(item.qty) || 1),
+      0
+    );
+  }
+
+  // ===== RENDER CHECKOUT =====
+  function renderCheckout() {
+    const itemsEl = document.getElementById("checkoutItems");
+    const emptyEl = document.getElementById("checkoutEmpty");
+    const subtotalEl = document.getElementById("checkoutSubtotal");
+    const totalEl = document.getElementById("checkoutTotal");
+
+    const cart = getCart();
+
+    if (!cart.length) {
+      itemsEl.innerHTML = "";
+      emptyEl.hidden = false;
+      subtotalEl.textContent = formatMoney(0);
+      totalEl.textContent = formatMoney(0);
+      return;
+    }
+
+    emptyEl.hidden = true;
+
+    itemsEl.innerHTML = cart
+      .map((item) => {
+        const qty = Number(item.qty) || 1;
+        const price = Number(item.price) || 0;
+        const line = price * qty;
+
+        // nếu cart bạn đang lưu img khác tên (image/imgUrl) thì fallback:
+        const img = item.img || item.image || item.imgUrl || "../assets/images/item-01.svg";
+
+        return `
+          <div class="summary-item">
+            <div class="summary-item__left">
+              <img class="summary-item__img" src="${img}" alt="${item.name || "Product"}" />
+              <div class="summary-item__meta">
+                <span class="summary-item__name">${item.name || "Unnamed"}</span>
+                <span class="summary-item__qty">x${qty}</span>
+              </div>
+            </div>
+            <span class="summary-item__price">${formatMoney(line)}</span>
+          </div>
+        `;
+      })
+      .join("");
+
+    const total = calcTotal(cart);
+    subtotalEl.textContent = formatMoney(total);
+    totalEl.textContent = formatMoney(total);
+  }
+
+  // ===== PLACE ORDER =====
+  function getUserId(user) {
+    // ưu tiên id, nếu không có thì dùng username/email để chắc chắn có giá trị
+    return user?.id || user?.username || user?.email || user?.profile?.username || "guest";
+  }
+
+  document.getElementById("btnPlaceOrder").addEventListener("click", () => {
+    const cart = getCart();
+    if (!cart.length) {
+      alert("Giỏ hàng trống ❌");
+      return;
+    }
+
+    // validate form required
+    const form = document.getElementById("checkoutForm");
+    if (form && !form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const user = getCurrentUser();
+    if (!user) {
+      alert("Bạn cần đăng nhập để đặt hàng!");
+      window.location.href = "./login.html"; // chỉnh path nếu khác
+      return;
+    }
+
+    const total = calcTotal(cart);
+
+    const order = {
+      id: Date.now(),
+
+      // ✅ các field này để admin-users thống kê
+      userId: getUserId(user),
+      username: user.username || user.profile?.username || user.name || "",
+      email: user.email || "",
+
+      items: cart,
+      total,
+
+      dateISO: new Date().toISOString(),
+      dateVN: new Date().toLocaleString("vi-VN"),
+      status: "paid",
+    };
+
+    // ✅ append vào ORDERS
+    const orders = getOrders();
+    orders.push(order);
+    setJson(ORDERS_KEY, orders);
+
+    // ✅ lastOrder để thank-you hiển thị
+    setJson(LAST_ORDER_KEY, order);
+
+    // ✅ clear cart
+    localStorage.removeItem(CART_KEY);
+
+    // ✅ redirect thank-you
+    window.location.href = "thank-you.html";
+  });
+
+  // init
+  renderCheckout();
+</script>
+  </body>
+</html>

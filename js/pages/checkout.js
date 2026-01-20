@@ -1,0 +1,90 @@
+const CART_KEY = "cart";
+const LAST_ORDER_KEY = "lastOrder";
+function getCart() {
+  return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+}
+
+function formatMoney(n) {
+  const num = Number(n) || 0;
+  // bạn đang hiển thị $ nên mình giữ $
+  return `$${num}`;
+}
+
+function calcSubtotal(cart) {
+  return cart.reduce((sum, item) => {
+    const price = Number(item.price) || 0;
+    const qty = Number(item.qty) || 0;
+    return sum + price * qty;
+  }, 0);
+}
+
+function renderCheckout() {
+  const cart = getCart();
+
+  const itemsEl = document.getElementById("checkoutItems");
+  const subEl = document.getElementById("checkoutSubtotal");
+  const totalEl = document.getElementById("checkoutTotal");
+
+  if (!itemsEl || !subEl || !totalEl) return;
+
+  // nếu giỏ trống
+  if (!cart.length) {
+    itemsEl.innerHTML = `<p style="padding:12px 0;">Giỏ hàng đang trống 🛒</p>`;
+    subEl.textContent = "$0";
+    totalEl.textContent = "$0";
+    return;
+  }
+
+  // render list items
+  itemsEl.innerHTML = cart
+    .map((item) => {
+      const name = item.name || "Unnamed";
+      const img = item.img || "";
+      const price = Number(item.price) || 0;
+      const qty = Number(item.qty) || 0;
+      const lineTotal = price * qty;
+
+      return `
+        <div class="checkout-item">
+          <div class="checkout-item__left">
+            <img class="checkout-item__img" src="${img}" alt="${name}">
+            <div class="checkout-item__info">
+              <div class="checkout-item__name">${name}</div>
+              <div class="checkout-item__meta">x${qty}</div>
+            </div>
+          </div>
+          <div class="checkout-item__price">${formatMoney(lineTotal)}</div>
+        </div>
+      `;
+    })
+    .join("");
+
+  const subtotal = calcSubtotal(cart);
+  subEl.textContent = formatMoney(subtotal);
+
+  // shipping free
+  const total = subtotal;
+  totalEl.textContent = formatMoney(total);
+}
+
+function placeOrder() {
+  const cart = getCart();
+  if (!cart.length) {
+    alert("Giỏ hàng trống, không thể đặt hàng!");
+    return;
+  }
+
+  // demo: đặt hàng xong thì clear cart
+  localStorage.removeItem(CART_KEY);
+  alert("Đặt hàng thành công ✅");
+  window.location.href = "../index.html";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderCheckout();
+
+  document.getElementById("btnPlaceOrder")?.addEventListener("click", placeOrder);
+
+  
+ 
+});

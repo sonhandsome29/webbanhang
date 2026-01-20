@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thank You</title>
+
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <style>
+      .thank-page { padding: 60px 0; background: #f6f7fb; min-height: 100vh; }
+      .thank-card {
+        max-width: 760px; margin: 0 auto; background: #fff;
+        border-radius: 18px; padding: 34px 28px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      }
+      .thank-title { margin: 0 0 8px; font-size: 28px; }
+      .thank-title span { color: #2ecc71; }
+      .thank-sub { margin: 0 0 18px; color: rgba(0,0,0,.6); }
+      .thank-meta { font-size: 14px; color: rgba(0,0,0,.55); margin-bottom: 18px; }
+
+      .thank-list { margin-top: 14px; border-top: 1px solid rgba(0,0,0,.08); }
+      .thank-item {
+        display:flex; justify-content:space-between; gap:12px;
+        padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,.06);
+      }
+      .thank-item__name { font-weight: 600; }
+      .thank-item__sub { color: rgba(0,0,0,.6); font-size: 13px; margin-top: 2px; }
+      .thank-total { text-align:right; font-weight: 800; font-size: 18px; margin-top: 14px; }
+
+      .thank-actions { margin-top: 22px; display:flex; gap:12px; justify-content:flex-end; flex-wrap: wrap; }
+      .thank-btn {
+        border:0; cursor:pointer; padding: 12px 18px; border-radius: 12px;
+        font-weight: 700; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+      }
+      .thank-btn--home { background:#111; color:#fff; }
+      .thank-btn--cart { background:#f2f3f7; color:#111; }
+    </style>
+  </head>
+
+  <body>
+    <main class="thank-page">
+      <div class="o-container">
+        <div class="thank-card">
+          <h1 class="thank-title"><span>✅</span> Thanh toán thành công</h1>
+          <p class="thank-sub">Cảm ơn bạn đã mua hàng tại shop!</p>
+
+          <div class="thank-meta" id="orderMeta"></div>
+
+          <div class="thank-list" id="orderItems"></div>
+          <div class="thank-total" id="orderTotal"></div>
+
+          <div class="thank-actions">
+            <a class="thank-btn thank-btn--cart" href="cart.html">🛒 Quay lại giỏ hàng</a>
+            <a class="thank-btn thank-btn--home" href="../index.html">🏠 Về trang chủ</a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function formatMoney(n) {
+        return "$" + (Math.round(Number(n) || 0)).toString();
+      }
+
+      const order = JSON.parse(localStorage.getItem("lastOrder"));
+
+      if (!order || !order.items) {
+        // không có đơn => về home
+        window.location.href = "../index.html";
+      }
+
+      document.getElementById("orderMeta").textContent =
+        `Mã đơn: #${order.id} • Thời gian: ${order.date}`;
+
+      const listEl = document.getElementById("orderItems");
+      listEl.innerHTML = order.items
+        .map((item) => {
+          const qty = Number(item.qty) || 1;
+          const price = Number(item.price) || 0;
+          return `
+            <div class="thank-item">
+              <div>
+                <div class="thank-item__name">${item.name}</div>
+                <div class="thank-item__sub">Số lượng: x${qty}</div>
+              </div>
+              <div>${formatMoney(price * qty)}</div>
+            </div>
+          `;
+        })
+        .join("");
+
+      document.getElementById("orderTotal").textContent =
+        "Tổng thanh toán: " + formatMoney(order.total);
+    </script>
+  </body>
+</html>

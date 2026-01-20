@@ -1,0 +1,44 @@
+@import "../base.css";
+
+.search-page {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-5xl);
+  min-height: 700px;
+}
+
+.search-page__title {
+  margin-bottom: var(--space-md);
+}
+
+.search-page__track {
+  display: grid;
+  gap: 20px;
+  justify-content: start;
+  justify-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+  margin-top: var(--space-xl);
+}
+.search-page__track.is-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.search-page__track .product {
+  width: 100%;
+  min-width: 0;
+}
+
+.search-page__empty {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 0;
+  color: #6b7280;
+  font-size: 32px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
+}

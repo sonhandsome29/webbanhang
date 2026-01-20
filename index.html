@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>L&S E-commerce</title>
+
+    <!-- CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+
+    <!-- <link rel="stylesheet" href="css/pages/login.css" /> -->
+    <!-- <link rel="stylesheet" href="css/pages/signup.css" /> -->
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- JS -->
+  </head>
+
+  <body>
+    <!-- ================= TOP BAR ================= -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <span>Free Shipping On All Orders Over $50</span>
+      </div>
+      <div class="topbar-links">
+        <a href="#">Eng</a>
+        <a href="#">Faqs</a>
+        <a id="loginLink" href="./pages/login.html">Sign In</a>
+        <a id="signupLink" href="./pages/sign-up.html">Sign Up</a>
+        <a href="#">Need Help</a>
+        <a id="logoutBtn" href="#" onclick="logout()" style="display: none"
+          >Logout</a
+        >
+      </div>
+    </div>
+
+    <!-- ================= HEADER ================= -->
+    <header id="header"></header>
+
+    <!-- ================= HERO ================= -->
+    <div class="hero o-container">
+      <!-- SLIDER -->
+      <div class="hero-slider">
+        <div class="slider">
+          <div class="slider-track">
+            <div class="slider-item">
+              <img src="./assets/images/carousel-img1.jpg" />
+            </div>
+            <div class="slider-item">
+              <img src="./assets/images/carousel-img1.jpg" />
+            </div>
+            <div class="slider-item">
+              <img src="./assets/images/carousel-img1.jpg" />
+            </div>
+          </div>
+
+          <div class="slider-dots">
+            <span class="dot is-active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FLASH SALE ================= -->
+    <section class="flash" id="flashSection">
+      <div class="o-container">
+        <!-- Header -->
+        <div class="flash-header">
+          <div class="flash-badge section-badge"><span></span> Today's</div>
+          <h2 class="flash-title">Flash Sales</h2>
+
+          <div class="countdown">
+            <span id="days">03</span> : <span id="hours">23</span> :
+            <span id="minutes">59</span> :
+            <span id="seconds">59</span>
+          </div>
+
+          <div class="flash-arrows">
+            <button class="flash-arrow flash-arrow--left">←</button>
+            <button class="flash-arrow flash-arrow--right">→</button>
+          </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div class="flash-slider">
+          <div class="flash-track o-grid-products"></div>
+        </div>
+      </div>
+
+      <div class="o-flex-center mt-50">
+        <button class="btn">View All Products</button>
+      </div>
+    </section>
+
+    <!-- ======= BEST SELLING PRODUCTS ============= -->
+    <section class="best-selling" id="bestSellingSection">
+      <div class="o-container">
+        <div class="o-section-header">
+          <div class="best-selling__badge"><span></span> This Month</div>
+          <h2 class="best-selling__title">Best Selling Products</h2>
+          <a class="btn best-selling__view-all" href="./pages/category.html"
+            >View All</a
+          >
+        </div>
+        <!-- products -->
+        <div class="best-selling__products">
+          <div
+            class="best-selling__track o-grid-products"
+            id="bestSellingTrack"
+          ></div>
+        </div>
+        <a
+          class="btn best-selling__view-all-mobile"
+          href="./pages/category.html"
+          >View All</a
+        >
+        <img
+          class="banner-img mt-100"
+          src="./assets/images/img-3.jpg "
+          alt="speaker-img"
+        />
+      </div>
+    </section>
+
+    <section class="our-products" id="ourProductsSection">
+      <div class="o-container">
+        <div class="o-section-header">
+          <div class="section-badge"><span></span> Our Products</div>
+          <h2 class="our-products__title">Explore Our Products</h2>
+
+          <div class="flash-arrows our-products__arrows">
+            <button type="button" class="flash-arrow">←</button>
+            <button type="button" class="flash-arrow">→</button>
+          </div>
+        </div>
+
+        <div class="our-products__products">
+          <div class="our-products__track o-grid-products">
+            <div class="product">
+              <div class="product-actions">
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Wishlist"
+                >
+                  ♡
+                </button>
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Quick view"
+                >
+                  👁
+                </button>
+              </div>
+              <div class="product-img-wrap">
+                <img
+                  src="./assets/images/product-1.jpg"
+                  class="product-img"
+                  alt=""
+                />
+                <button class="product-cart" type="button">Add To Cart</button>
+              </div>
+              <h3 class="product-name">Breed Dry Dog Food</h3>
+              <div class="product-price">
+                <span class="price-new">$100</span>
+              </div>
+              <div class="product-rating">⭐⭐⭐⭐⭐ <span>(35)</span></div>
+            </div>
+
+            <div class="product">
+              <div class="product-actions">
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Wishlist"
+                >
+                  ♡
+                </button>
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Quick view"
+                >
+                  👁
+                </button>
+              </div>
+              <div class="product-img-wrap">
+                <img
+                  src="./assets/images/product-2.jpg"
+                  class="product-img"
+                  alt=""
+                />
+                <button class="product-cart" type="button">Add To Cart</button>
+              </div>
+              <h3 class="product-name">CANON EOS DSLR Camera</h3>
+              <div class="product-price">
+                <span class="price-new">$360</span>
+              </div>
+              <div class="product-rating">⭐⭐⭐⭐⭐ <span>(95)</span></div>
+            </div>
+
+            <div class="product">
+              <div class="product-actions">
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Wishlist"
+                >
+                  ♡
+                </button>
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Quick view"
+                >
+                  👁
+                </button>
+              </div>
+              <div class="product-img-wrap">
+                <img
+                  src="./assets/images/product-3.jpg"
+                  class="product-img"
+                  alt=""
+                />
+                <button class="product-cart" type="button">Add To Cart</button>
+              </div>
+              <h3 class="product-name">ASUS FHD Gaming Laptop</h3>
+              <div class="product-price">
+                <span class="price-new">$700</span>
+              </div>
+              <div class="product-rating">⭐⭐⭐⭐⭐ <span>(325)</span></div>
+            </div>
+
+            <div class="product">
+              <div class="product-actions">
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Wishlist"
+                >
+                  ♡
+                </button>
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Quick view"
+                >
+                  👁
+                </button>
+              </div>
+              <div class="product-img-wrap">
+                <img
+                  src="./assets/images/product-4.jpg"
+                  class="product-img"
+                  alt=""
+                />
+                <button class="product-cart" type="button">Add To Cart</button>
+              </div>
+              <h3 class="product-name">Curology Product Set</h3>
+              <div class="product-price">
+                <span class="price-new">$500</span>
+              </div>
+              <div class="product-rating">⭐⭐⭐⭐⭐ <span>(145)</span></div>
+            </div>
+
+            <div class="product">
+              <span class="product-badge product-badge--new">NEW</span>
+              <div class="product-actions">
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Wishlist"
+                >
+                  ♡
+                </button>
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Quick view"
+                >
+                  👁
+                </button>
+              </div>
+              <div class="product-img-wrap">
+                <img
+                  src="./assets/images/product-5.jpg"
+                  class="product-img"
+                  alt=""
+                />
+                <button class="product-cart" type="button">Add To Cart</button>
+              </div>
+              <h3 class="product-name">Kids Electric Car</h3>
+              <div class="product-price">
+                <span class="price-new">$960</span>
+              </div>
+              <div class="product-rating">⭐⭐⭐⭐⭐ <span>(65)</span></div>
+              <div class="product-colors">
+                <span
+                  class="product-color product-color--red"
+                  aria-hidden="true"
+                ></span>
+                <span
+                  class="product-color product-color--black"
+                  aria-hidden="true"
+                ></span>
+              </div>
+            </div>
+
+            <div class="product">
+              <div class="product-actions">
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Wishlist"
+                >
+                  ♡
+                </button>
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Quick view"
+                >
+                  👁
+                </button>
+              </div>
+              <div class="product-img-wrap">
+                <img
+                  src="./assets/images/product-6.jpg"
+                  class="product-img"
+                  alt=""
+                />
+                <button class="product-cart" type="button">Add To Cart</button>
+              </div>
+              <h3 class="product-name">Jr. Zoom Soccer Cleats</h3>
+              <div class="product-price">
+                <span class="price-new">$1160</span>
+              </div>
+              <div class="product-rating">⭐⭐⭐⭐⭐ <span>(35)</span></div>
+              <div class="product-colors">
+                <span
+                  class="product-color product-color--yellow"
+                  aria-hidden="true"
+                ></span>
+                <span
+                  class="product-color product-color--red"
+                  aria-hidden="true"
+                ></span>
+              </div>
+            </div>
+
+            <div class="product">
+              <span class="product-badge product-badge--new">NEW</span>
+              <div class="product-actions">
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Wishlist"
+                >
+                  ♡
+                </button>
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Quick view"
+                >
+                  👁
+                </button>
+              </div>
+              <div class="product-img-wrap">
+                <img
+                  src="./assets/images/product-7.jpg"
+                  class="product-img"
+                  alt=""
+                />
+                <button class="product-cart" type="button">Add To Cart</button>
+              </div>
+              <h3 class="product-name">GP11 Shooter USB Gamepad</h3>
+              <div class="product-price">
+                <span class="price-new">$660</span>
+              </div>
+              <div class="product-rating">⭐⭐⭐⭐⭐ <span>(55)</span></div>
+              <div class="product-colors">
+                <span
+                  class="product-color product-color--black"
+                  aria-hidden="true"
+                ></span>
+                <span
+                  class="product-color product-color--red"
+                  aria-hidden="true"
+                ></span>
+              </div>
+            </div>
+
+            <div class="product">
+              <div class="product-actions">
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Wishlist"
+                >
+                  ♡
+                </button>
+                <button
+                  class="product-action-btn"
+                  type="button"
+                  aria-label="Quick view"
+                >
+                  👁
+                </button>
+              </div>
+              <div class="product-img-wrap">
+                <img
+                  src="./assets/images/product-8.jpg"
+                  class="product-img"
+                  alt=""
+                />
+                <button class="product-cart" type="button">Add To Cart</button>
+              </div>
+              <h3 class="product-name">Quilted Satin Jacket</h3>
+              <div class="product-price">
+                <span class="price-new">$660</span>
+              </div>
+              <div class="product-rating">⭐⭐⭐⭐⭐ <span>(55)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="o-flex-center mt-50">
+        <button class="btn">View All Products</button>
+      </div>
+    </section>
+
+    <section class="featured" id="featuredSection">
+      <div class="o-container">
+        <div class="section-badge"><span></span> Featured</div>
+        <h2 class="featured__title">New Arrival</h2>
+
+        <div class="featured-grid">
+          <a class="featured-card featured-card--large" href="#">
+            <img
+              class="featured-card__img"
+              src="./assets/images/featured-product1.jpg"
+              alt=""
+            />
+            <div class="featured-card__content">
+              <h3 class="featured-card__name">PlayStation 5</h3>
+              <p class="featured-card__desc">
+                Black and White version of the PS5 coming out on sale.
+              </p>
+              <span class="featured-card__link">Shop Now</span>
+            </div>
+          </a>
+
+          <div class="featured-grid__right">
+            <a class="featured-card featured-card--wide" href="#">
+              <img
+                class="featured-card__img"
+                src="./assets/images/featured-product2.jpg"
+                alt=""
+              />
+              <div class="featured-card__content">
+                <h3 class="featured-card__name">Women's Collections</h3>
+                <p class="featured-card__desc">
+                  Featured woman collections that give you another vibe.
+                </p>
+                <span class="featured-card__link">Shop Now</span>
+              </div>
+            </a>
+
+            <div class="featured-grid__bottom">
+              <a class="featured-card" href="#">
+                <img
+                  class="featured-card__img"
+                  src="./assets/images/featured-product3.jpg"
+                  alt=""
+                />
+                <div class="featured-card__content">
+                  <h3 class="featured-card__name">Speakers</h3>
+                  <p class="featured-card__desc">Amazon wireless speakers</p>
+                  <span class="featured-card__link">Shop Now</span>
+                </div>
+              </a>
+
+              <a class="featured-card" href="#">
+                <img
+                  class="featured-card__img"
+                  src="./assets/images/featured-product4.jpg"
+                  alt=""
+                />
+                <div class="featured-card__content">
+                  <h3 class="featured-card__name">Perfume</h3>
+                  <p class="featured-card__desc">GUCCI INTENSE OUD EDP</p>
+                  <span class="featured-card__link">Shop Now</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="services" id="servicesSection">
+      <div class="o-container">
+        <div class="services__grid">
+          <div class="service-item">
+            <div class="service-icon">
+              <img src="./assets/icons/featured-icon1.png" />
+            </div>
+            <h3 class="service-title">FREE AND FAST DELIVERY</h3>
+            <p class="service-desc">Free delivery for all orders over $140</p>
+          </div>
+
+          <div class="service-item">
+            <div class="service-icon">
+              <img src="./assets/icons/featured-icon2.png" />
+            </div>
+            <h3 class="service-title">24/7 CUSTOMER SERVICE</h3>
+            <p class="service-desc">Friendly 24/7 customer support</p>
+          </div>
+
+          <div class="service-item">
+            <div class="service-icon">
+              <img src="./assets/icons/featured-icon3.png" />
+            </div>
+            <h3 class="service-title">MONEY BACK GUARANTEE</h3>
+            <p class="service-desc">We return money within 30 days</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <button
+      id="backToTop"
+      class="back-to-top"
+      type="button"
+      aria-label="Back to top"
+      title="Back to top"
+    >
+      ↑
+    </button>
+
+    <section id="searchResultsSection" hidden>
+      <div class="o-container">
+        <h2 id="searchResultsTitle"></h2>
+        <div id="searchResultsTrack"></div>
+      </div>
+    </section>
+    <footer id="footer"></footer>
+  </body>
+
+  <script defer src="./js/script.js"></script>
+</html>
