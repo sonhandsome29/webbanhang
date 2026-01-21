@@ -39,14 +39,14 @@ function getUsers() { return getLS(USERS_KEY, []); }
 function getOrders() { return getLS(ORDERS_KEY, []); }
 
 function getUserId(u) {
-  return u.id || u.username || u.email;
+  return String(u.id || u.username || u.email || "");
 }
 
 // gom orders theo userId
 function buildOrderStats(orders) {
   const map = new Map(); // userId -> {count,total,lastISO,orders:[]}
   orders.forEach(o => {
-    const uid = o.userId || o.username || o.email;
+    const uid = String(o.userId || o.username || o.email || "");
     if (!uid) return;
     if (!map.has(uid)) map.set(uid, { count: 0, total: 0, lastISO: null, orders: [] });
 
@@ -127,7 +127,9 @@ function renderUsers() {
 
 window.openOrders = function(uidEncoded) {
   const uid = decodeURIComponent(uidEncoded);
-  const orders = getOrders().filter(o => (o.userId || o.username || o.email) === uid);
+  const orders = getOrders().filter(
+    (o) => String(o.userId || o.username || o.email || "") === uid,
+  );
 
   const modal = document.getElementById("ordersModal");
   const list = document.getElementById("ordersList");

@@ -832,10 +832,12 @@ function bindUserMenu() {
     const isLoggedIn = Boolean(u);
     const isAdmin = u?.role === "admin";
 
+    const profileAvatar = u?.profile?.avatar || loggedInAvatar;
+
     // avatar
     if (userIconImg)
-      userIconImg.src = isLoggedIn ? loggedInAvatar : defaultAvatar;
-    if (avatarEl) avatarEl.src = isLoggedIn ? loggedInAvatar : defaultAvatar;
+      userIconImg.src = isLoggedIn ? profileAvatar : defaultAvatar;
+    if (avatarEl) avatarEl.src = isLoggedIn ? profileAvatar : defaultAvatar;
 
     // header info
     if (headEl) headEl.style.display = isLoggedIn ? "flex" : "none";
@@ -857,7 +859,12 @@ function bindUserMenu() {
 
     // name/email
     if (!isLoggedIn) return;
-    const displayName = u?.fullName || u?.name || "Your name";
+    const displayName =
+      `${u?.profile?.firstName || ""} ${u?.profile?.lastName || ""}`.trim() ||
+      u?.profile?.username ||
+      u?.fullName ||
+      u?.name ||
+      "Your name";
     const displayEmail = u?.email || "yourname@gmail.com";
     if (nameEl) nameEl.textContent = displayName;
     if (emailEl) emailEl.textContent = displayEmail;
